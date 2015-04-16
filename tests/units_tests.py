@@ -28,6 +28,25 @@ class TestUnitOperators(unittest.TestCase):
         self.isecond = U.Unit('second', 's', {(-1, U.UnitType.TIME)})
         self.ikgram = U.Unit('kilogram', 'kg', {(-1, U.UnitType.MASS)})
 
+    def test_add(self):
+        """
+        + and - operations
+        """
+        self.assertEqual(self.meter + self.meter, 2 * self.meter)
+        with self.assertRaises(ArithmeticError):
+            self.meter + self.second
+        with self.assertRaises(ArithmeticError):
+            self.meter + 2
+
+        self.assertEqual(self.meter - self.meter, 0)
+        self.assertEqual(2 * self.meter - self.meter, self.meter)
+
+        with self.assertRaises(ArithmeticError):
+            self.meter - self.second
+
+        with self.assertRaises(ArithmeticError):
+            self.second - 1
+
     def test_eq(self):
         """
         == and !=
