@@ -154,7 +154,6 @@ class TestUnitOperators(unittest.TestCase):
         foot = .305 * self.meter
         inch = 1 / 12 * foot
 
-        print(abs(height / foot - 5.246) < .0001)
         self.assertTrue(abs(height / foot - 5.246) < .001)
         self.assertTrue(abs(height / inch - 62.951) < .001)
 
