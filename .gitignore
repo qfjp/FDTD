@@ -1,0 +1,4 @@
+*.un~
+.coverage
+*.swp
+__pycache__
