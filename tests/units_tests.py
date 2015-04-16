@@ -4,11 +4,10 @@ Unit tests for units.py module
 # pylint: disable=pointless-statement
 
 import fdtd.units
-import fdtd.constants
 
 import unittest
+
 U = fdtd.units
-C = fdtd.constants
 Unit = fdtd.units.Unit
 
 
@@ -143,6 +142,27 @@ class TestUnitOperators(unittest.TestCase):
         self.assertEqual(self.meter * self.imeter, 1)
         self.assertEqual(self.second * self.isecond, 1)
         self.assertEqual(self.kgram * self.ikgram, 1)
+
+    def test_convert(self):
+        """
+        Test physical conversions between units
+        """
+        height = 1.6 * self.meter
+        foot = .305 * self.meter
+        inch = 1 / 12 * foot
+
+        print(abs(height / foot - 5.246) < .0001)
+        self.assertTrue(abs(height / foot - 5.246) < .001)
+        self.assertTrue(abs(height / inch - 62.951) < .001)
+
+        newton = self.kgram * self.meter / (self.second ** 2)
+        pound = 4.448222 * newton
+        accel = 9.8 * self.meter / (self.second ** 2)
+
+        weight = 150 * pound
+        mass = weight / accel
+        self.assertTrue(abs(mass / self.kgram - 68.085) < .001)
+
 
 if __name__ == '__main__':
     unittest.main()
