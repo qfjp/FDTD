@@ -143,6 +143,8 @@ class Unit:
                   unit type
         """
         if isinstance(other, int) or isinstance(other, float):
+            if other == 0:
+                return 0
             return Unit(self.name, self.symbol, self.category,
                         self.value * other)
         elif isinstance(other, Unit):
@@ -211,8 +213,7 @@ class Unit:
                  type
         """
         if isinstance(other, int) or isinstance(other, float):
-            return Unit(self.name, self.symbol, self.category,
-                        self.value / other)
+            return self * (1 / other)
         elif isinstance(other, Unit):
             new_cat = set()
             new_val = 1 / other.value
