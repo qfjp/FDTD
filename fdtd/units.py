@@ -348,22 +348,23 @@ class Unit:
 
     def __add__(self, other):
         if isinstance(other, Unit) and other.category == self.category:
+            if self.value + other.value == 0:
+                return 0
             return Unit(self.name, self.symbol, self.category,
                         self.value + other.value)
         else:
             raise ArithmeticError("({0}) and ({1}) don't match units"
                                   .format(self, other))
 
+    def __neg__(self):
+        return Unit(self.name, self.symbol, self.category, -self.value)
+
     def __sub__(self, other):
         if isinstance(other, Unit) and other.category == self.category:
-            return Unit(self.name, self.symbol, self.category,
-                        self.value - other.value)
+            return self + (-other)
         else:
             raise ArithmeticError("({0}) and ({1}) don't match units"
                                   .format(self, other))
-
-    def __neg__(self):
-        return Unit(self.name, self.symbol, self.category, -self.value)
 
 
 # pylint: disable=invalid-name
