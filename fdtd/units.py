@@ -101,8 +101,8 @@ class Unit:
         """
         if not isinstance(other, Unit):
             return False
-        return self.category == other.category and\
-               self.value == other.value
+        return self.category == other.category and \
+            self.value == other.value
 
     def __init__(self, name, symbol, category, value=1):
         """
