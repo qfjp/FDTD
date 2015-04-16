@@ -138,6 +138,9 @@ class TestUnitOperators(unittest.TestCase):
 
         self.assertEqual(self.meter / 2, self.meter * (1 / 2))
 
+        with self.assertRaises(ZeroDivisionError):
+            self.meter / 0
+
     def test_cancellations(self):
         """
         Make sure units cancel properly
