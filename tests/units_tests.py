@@ -91,6 +91,9 @@ class TestUnitOperators(unittest.TestCase):
         self.assertEqual(self.meter * 1.0, self.meter)
         self.assertNotEqual(self.meter * 1.1, self.meter)
 
+        self.assertEqual(self.meter * 0, 0)
+        self.assertEqual(self.meter * 0.0, 0)
+
         with self.assertRaises(ArithmeticError):
             self.meter * "hey"
 
