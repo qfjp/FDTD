@@ -7,6 +7,8 @@ import fdtd.units
 
 import unittest
 
+import numpy as np
+
 U = fdtd.units
 Unit = fdtd.units.Unit
 
@@ -167,6 +169,29 @@ class TestUnitOperators(unittest.TestCase):
         weight = 150 * pound
         mass = weight / accel
         self.assertTrue(abs(mass / self.kgram - 68.085) < .001)
+
+    def test_array_mult(self):
+        """
+        test multiplying arrays, units, and arrays of units
+        """
+        # pylint: disable=no-member
+        ident_2_2 = np.array([[1, 1], [1, 1]])
+
+        # Unit times a 2D array
+        meter_ident_2_2 = self.meter * ident_2_2
+        self.assertEqual(meter_ident_2_2[0][0], self.meter)
+        self.assertEqual(meter_ident_2_2[0][1], self.meter)
+        self.assertEqual(meter_ident_2_2[1][0], self.meter)
+        self.assertEqual(meter_ident_2_2[1][1], self.meter)
+
+        # 2D arrays multiplying each other (arrays multiply point by
+        # point)
+        matr_2_2 = np.array([[1, 2], [3, 4]])
+        matr_mult = meter_ident_2_2 * matr_2_2
+        self.assertEqual(matr_mult[0][0], self.meter)
+        self.assertEqual(matr_mult[0][1], 2 * self.meter)
+        self.assertEqual(matr_mult[1][0], 3 * self.meter)
+        self.assertEqual(matr_mult[1][1], 4 * self.meter)
 
 
 if __name__ == '__main__':
