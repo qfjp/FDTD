@@ -174,8 +174,15 @@ class Unit:
                         self.value * other)
         elif isinstance(other, np.ndarray):
             new_arr = np.empty(other.shape, dtype=object)
-            for i, item in enumerate(other.flat):
-                new_arr.flat[i] = self * item
+            if other.dtype.kind in ['i', 'f', 'c']:
+                for i, item in enumerate(other.flat):
+                    new_arr.flat[i] = Unit(self.name, self.symbol,
+                                           self.category,
+                                           self.value * item)
+            else:
+                for i, item in enumerate(other.flat):
+                    new_arr.flat[i] = self * item
+
             return new_arr
         elif isinstance(other, Unit):
             new_cat = Unit._merge_categories(self.category, other.category)
