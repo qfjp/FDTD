@@ -136,7 +136,6 @@ class Unit:
         self.category = category
         self.value = value
         self._remove_cancellations()
-        self._set_name_and_symbol()
 
     @staticmethod
     def _is_number(obj):
@@ -229,6 +228,7 @@ class Unit:
 
         :return: the string 'self.value * self.symbol'
         """
+        self._set_name_and_symbol()
         return "{0} * {1}".format(self.value, self.symbol)
 
     def __truediv__(self, other):
