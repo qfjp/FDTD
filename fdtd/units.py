@@ -10,7 +10,14 @@
 """
 # Defines units which we can use as types
 from enum import Enum
-# import numpy
+
+import numpy as np
+
+# pylint: disable=no-member
+NUM_TYPES = [int, float, np.int8, np.int16, np.int32, np.int64,
+             np.uint8, np.uint16, np.uint32, np.uint64, np.float16,
+             np.float32, np.float64, np.complex64, np.complex128]
+# pylint: enable=no-member
 
 
 class UnitType(Enum):
@@ -131,6 +138,23 @@ class Unit:
         self._remove_cancellations()
         self._set_name_and_symbol()
 
+    @staticmethod
+    def _is_number(obj):
+        """
+        Checks whether a given object is a number as defined in the
+        NUM_TYPES array
+        :param obj: a generic object
+        :type obj: object
+
+        :returns: True if the object is a number
+        """
+        is_number = False
+        for tpe in NUM_TYPES:
+            if isinstance(obj, tpe):
+                is_number = True
+                break
+        return is_number
+
     def __mul__(self, other):
         """
         Defines multiplication of units with other units or scalars.
@@ -138,15 +162,22 @@ class Unit:
         Only applies to left-multiplication, where self is on the left.
 
         :param other: The object to multiply by
-        :type  other: Unit | Number
+        :type  other: Unit | Number | np.ndarray
         :returns: A scalar if all the units cancel, otherwise a new
                   unit type
         """
-        if isinstance(other, int) or isinstance(other, float):
+        # pylint: disable=no-member
+        is_number = self._is_number(other)
+        if is_number:
             if other == 0:
                 return 0
             return Unit(self.name, self.symbol, self.category,
                         self.value * other)
+        elif isinstance(other, np.ndarray):
+            new_arr = np.empty(other.shape, dtype=object)
+            for i, item in enumerate(other.flat):
+                new_arr.flat[i] = self * item
+            return new_arr
         elif isinstance(other, Unit):
             new_cat = Unit._merge_categories(self.category, other.category)
 
@@ -159,11 +190,10 @@ class Unit:
 
             # Otherwise, return a new unit
             return new_unit
-        # elif isinstance(other, numpy.ndarray):
-        #     pass
         else:
-            raise ArithmeticError("({0}) and ({1}) don't match units"
-                                  .format(self, other))
+            raise ArithmeticError("({0}) and ({1}) cannot be multiplied"
+                                  .format(type(self), type(other)))
+        # pylint: enable=no-member
 
     def __pow__(self, other):
         """
