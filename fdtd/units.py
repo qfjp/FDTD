@@ -13,6 +13,8 @@ from enum import Enum
 
 import numpy as np
 
+from tags.tags import deprecated
+
 # pylint: disable=no-member
 NUM_TYPES = [int, float, np.int8, np.int16, np.int32, np.int64,
              np.uint8, np.uint16, np.uint32, np.uint64, np.float16,
@@ -371,6 +373,7 @@ class Unit:
         self.name = Unit._name_list_to_string(names)
         self.symbol = Unit._name_list_to_string(symbs)
 
+    @deprecated
     def _remove_cancellations(self):
         """
         Removes entries from self.category that have a power of 0.
