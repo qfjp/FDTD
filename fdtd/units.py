@@ -137,7 +137,6 @@ class Unit:
         self.symbol = symbol
         self.category = category
         self.value = value
-        self._remove_cancellations()
 
     @staticmethod
     def _is_number(obj):
@@ -337,7 +336,9 @@ class Unit:
             if cur_unit == prv_unit:
                 new_powr = prv_powr + cur_powr
                 new_cat.remove((prv_powr, prv_unit))
-            new_cat.add((new_powr, cur_unit))
+
+            if new_powr != 0:
+                new_cat.add((new_powr, cur_unit))
 
             prv_powr = cur_powr
             prv_unit = cur_unit
