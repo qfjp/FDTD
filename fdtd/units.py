@@ -389,6 +389,13 @@ class Unit:
                 continue
 
     def __add__(self, other):
+        """
+        Defines Addition of units with other units
+
+        :param other: The object to add
+        :type  other: Unit
+        :return: A unit of the same type, or 0 if both sum to 0
+        """
         if isinstance(other, Unit) and other.category == self.category:
             if self.value + other.value == 0:
                 return 0
@@ -399,9 +406,21 @@ class Unit:
                                   .format(self, other))
 
     def __neg__(self):
+        """
+        Defines negation of a unit
+        """
         return Unit(self.name, self.symbol, self.category, -self.value)
 
     def __sub__(self, other):
+        """
+        Defines Subtraction of units with other units
+
+        A simple wrapper around addition
+
+        :param other: The object to add
+        :type  other: Unit
+        :return: A unit of the same type, or 0 if both sum to 0
+        """
         if isinstance(other, Unit) and other.category == self.category:
             return self + (-other)
         else:
