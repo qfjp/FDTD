@@ -11,7 +11,8 @@ Contents:
 .. toctree::
    :maxdepth: 2
 
-   units
+   doc/tags
+   doc/units
 
 
 Indices and tables
