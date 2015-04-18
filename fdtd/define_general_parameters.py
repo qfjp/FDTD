@@ -1,88 +1,101 @@
-# pylint: disable=invalid-name,no-member
+# pylint: disable=no-member
 """
 An attempt to translate the god awful madness that is fdtd.m
 """
-import numpy
+import numpy as np
 import fdtd.constants as constants
 
-"""
-These seem to be hardcoded in interactiveFDTD.m
-"""
-arb_matrix = numpy.matrix([[1.00000, 1.00000, 1.00000],
-                           [0.85714, 1.00000, 1.00000],
-                           [0.71429, 1.00000, 1.00000],
-                           [0.57143, 1.00000, 1.00000],
-                           [0.42857, 1.00000, 1.00000],
-                           [0.28571, 1.00000, 1.00000],
-                           [0.14286, 1.00000, 1.00000],
-                           [0.00000, 1.00000, 1.00000],
-                           [0.00000, 0.90000, 1.00000],
-                           [0.00000, 0.80000, 1.00000],
-                           [0.00000, 0.70000, 1.00000],
-                           [0.00000, 0.60000, 1.00000],
-                           [0.00000, 0.50000, 1.00000],
-                           [0.00000, 0.40000, 1.00000],
-                           [0.00000, 0.30000, 1.00000],
-                           [0.00000, 0.20000, 1.00000],
-                           [0.00000, 0.10000, 1.00000],
-                           [0.00000, 0.00000, 1.00000],
-                           [0.00000, 0.00000, 0.93333],
-                           [0.00000, 0.00000, 0.86667],
-                           [0.00000, 0.00000, 0.80000],
-                           [0.00000, 0.00000, 0.73333],
-                           [0.00000, 0.00000, 0.66667],
-                           [0.00000, 0.00000, 0.60000],
-                           [0.00000, 0.00000, 0.53333],
-                           [0.00000, 0.00000, 0.46667],
-                           [0.00000, 0.00000, 0.40000],
-                           [0.00000, 0.00000, 0.33333],
-                           [0.00000, 0.00000, 0.26667],
-                           [0.00000, 0.00000, 0.20000],
-                           [0.00000, 0.00000, 0.13333],
-                           [0.00000, 0.00000, 0.06667],
-                           [0.00000, 0.00000, 0.00000],
-                           [0.03333, 0.00000, 0.00000],
-                           [0.06667, 0.00000, 0.00000],
-                           [0.10000, 0.00000, 0.00000],
-                           [0.13333, 0.00000, 0.00000],
-                           [0.16667, 0.00000, 0.00000],
-                           [0.20000, 0.00000, 0.00000],
-                           [0.23333, 0.00000, 0.00000],
-                           [0.26667, 0.00000, 0.00000],
-                           [0.30000, 0.00000, 0.00000],
-                           [0.33333, 0.00000, 0.00000],
-                           [0.36667, 0.00000, 0.00000],
-                           [0.40000, 0.00000, 0.00000],
-                           [0.45455, 0.00000, 0.00000],
-                           [0.50909, 0.00000, 0.00000],
-                           [0.56364, 0.00000, 0.00000],
-                           [0.61818, 0.00000, 0.00000],
-                           [0.67273, 0.00000, 0.00000],
-                           [0.72727, 0.00000, 0.00000],
-                           [0.78182, 0.00000, 0.00000],
-                           [0.83636, 0.00000, 0.00000],
-                           [0.89091, 0.00000, 0.00000],
-                           [0.94545, 0.00000, 0.00000],
-                           [1.00000, 0.00000, 0.00000],
-                           [1.00000, 0.12500, 0.12500],
-                           [1.00000, 0.25000, 0.25000],
-                           [1.00000, 0.37500, 0.37500],
-                           [1.00000, 0.50000, 0.50000],
-                           [1.00000, 0.62500, 0.62500],
-                           [1.00000, 0.75000, 0.75000],
-                           [1.00000, 0.87500, 0.87500],
-                           [1.00000, 1.00000, 1.00000]])
-plotvar1 = 5
-plotvar2 = 4
-plotvar3 = 0
-plotvar4 = 0
-plotvar5 = 0.8
-plotvar6 = 0
-plotvar8 = 0
-plotvar9 = arb_matrix
-plotvar10 = 10
 
-Anzeige = 0  # Display?!
+class Params:
+    """
+    Reworking define_general_parameters as a class
+    """
+    def __init__(self):
+        self._x_arr = None   # x
+        self._y_arr = None   # y
+        self.del_x = 0       # dx
+        self.del_y = 0       # dy
+        self._x_grid = None  # X
+        self._y_grid = None  # Y
+        self.epsilon = None
+        self.mu = None
+        self.z_s = None
+        self.alphadat = None
+
+    def set_grid(self):
+        """
+        Set the grid?
+        """
+        self._x_grid, self._y_grid = np.meshgrid(self._x_arr, self._y_arr)
+
+    def get_grid(self):
+        """
+        Returns the grid?
+        """
+        return (self._x_grid, self._y_grid)
+
+    def set_x_arr(self, beg, end, num):
+        """
+        Set the value of the x array as an evenly spaced array
+        over the specified interval
+
+        :param beg: The start of the interval
+        :param end: The end of the interval
+        :param num: The number of points over the interval
+
+        :param beg: real
+        :param end: real
+        :param num: int
+        """
+        self._x_arr = np.linspace(beg, end, num=num)
+        self.del_x = self._x_arr[1] - self._x_arr[0]
+
+    def set_y_arr(self, beg, end, num):
+        """
+        Set the value of the x array as an evenly spaced array
+        over the specified interval
+
+        :param beg: The start of the interval
+        :param end: The end of the interval
+        :param num: The number of points over the interval
+
+        :param beg: real
+        :param end: real
+        :param num: int
+        """
+        self._y_arr = np.linspace(beg, end, num=num)
+        self.del_y = self._y_arr[1] - self._y_arr[0]
+
+    def set_y_col_notation(self, j, i, k):
+        """
+        Set the y array using matlab colon notation
+        """
+        step = int((k - j) / i)
+        y_lst = [j + (mul) * i for mul in range(step + 1)]
+        self._y_arr = np.array(y_lst)
+
+    def set_x_col_notation(self, j, i, k):
+        """
+        Set the x array using matlab colon notation
+        """
+        step = int((k - j) / i)
+        x_lst = [j + (mul) * i for mul in range(step + 1)]
+        self._x_arr = np.array(x_lst)
+
+    def get_x_arr(self):
+        """
+        getter for the x array
+        :return: The x numpy.ndarray
+        """
+        return self._x_arr
+
+    def get_y_arr(self):
+        """
+        getter for the y array
+        :return: The y numpy.ndarray
+        """
+        return self._y_arr
+
 
 # From definegeneralparameters.m
 # Columns in answer are (in order):
@@ -94,55 +107,63 @@ Anzeige = 0  # Display?!
 #   vi) Num of time stepsa
 #  vii) num of perfectly matched layers
 # viii) axis equal
-prompt = ['maximum number of Gridpoints in one Dimension',
+PROMPT = ['maximum number of Gridpoints in one Dimension',
           '\\epsilon - Background', '\\mu - Background',
           'Size x-Dimension [\\mum]', 'Size y-Dimension [\\mum]',
           'Number of timesteps', 'Number of Perfectly Matched Layers',
           'axis equal']
-default_answer = ['300', '1', '1', '5', '5', '300000', '10', '0']
-answer = [int(i) for i in default_answer]
-pmlwidth = answer[6]
 
-Anz = 0
-if Anzeige == 0:
-    Anz = pmlwidth + 1
+# TODO: What do these mean?
+DEFAULT_ANSWER = ['300', '1', '1', '5', '5', '300000', '10', '0']
+# options...
+ANSWER = [int(i) for i in DEFAULT_ANSWER]
+AXISIMAGE = ANSWER[7]
+PMLWIDTH = ANSWER[6]
+
+PARAMS = Params()
+
+# if ANSWER[4] > ANSWER[5]:
+if ANSWER[5] > ANSWER[4]:
+    # x=linspace(-str2num(ANSWER{4})/2,str2num(ANSWER{4})/2,str2num(ANSWER{1}))
+    # y=[-str2num(ANSWER{5})/2-dx:dx:str2num(ANSWER{5})/2+dx]
+    PARAMS.set_x_arr(-ANSWER[3] / 2, ANSWER[3] / 2, ANSWER[0])
+    PARAMS.set_y_col_notation(-ANSWER[4] / 2 - PARAMS.del_x,
+                              PARAMS.del_x,
+                              ANSWER[4] / 2 + PARAMS.del_x)
+    # x = np.linspace(-ANSWER[3] / 2, ANSWER[3] / 2, num=ANSWER[0])
+    # dx = x[1] - x[0]
+
+    # j = -ANSWER[4] / 2 - dx
+    # i = dx
+    # k = ANSWER[4] / 2 + dx
+    # m = int((k - j) / i)
+    # # Want the list j, j+i, j+2i, + ... + j+m*i
+    # y_lst = [j + (mul) * dx for mul in range(m + 1)]
+    # y = np.array(y_lst)
 else:
-    Anz = 1
+    # y = np.linspace(-ANSWER[4] / 2, ANSWER[4] / 2, ANSWER[0])
+    PARAMS.set_y_arr(-ANSWER[4] / 2, ANSWER[4] / 2, ANSWER[0])
+    PARAMS.set_x_col_notation(ANSWER[3] / 2 - PARAMS.del_y,
+                              PARAMS.del_y,
+                              ANSWER[3] / 2 + PARAMS.del_y)
+    # dx = y[1] - y[0]
 
-# PML Vorkehrungen (Precautions?)
-# if answer[4] > answer[5]:
-if answer[5] > answer[4]:
-    # x=linspace(-str2num(answer{4})/2,str2num(answer{4})/2,str2num(answer{1}))
-    # y=[-str2num(answer{5})/2-dx:dx:str2num(answer{5})/2+dx]
-    x = numpy.linspace(-answer[3] / 2, answer[3] / 2, num=answer[0])
-    dx = x[1] - x[0]
+    # j = -ANSWER[4] / 2 - dx
+    # i = dx
+    # k = ANSWER[4] / 2 + dx
+    # m = int((k - j) / i)
+    # # Want the list j, j+i, j+2i, + ... + j+m*i
+    # x_lst = [j + (mul) * dx for mul in range(m + 1)]
+    # x = np.array(x_lst)
 
-    j = -answer[4] / 2 - dx
-    i = dx
-    k = answer[4] / 2 + dx
-    m = int((k - j) / i)
-    # Want the list j, j+i, j+2i, + ... + j+m*i
-    y_lst = [j + (mul) * dx for mul in range(m + 1)]
-    y = numpy.array(y_lst)
-else:
-    y = numpy.linspace(-answer[4] / 2, answer[4] / 2, answer[0])
-    dx = y[1] - y[0]
+# X, Y = np.meshgrid(PARAMS.get_x_arr(), PARAMS.get_y_arr())
+PARAMS.set_grid()
 
-    j = -answer[4] / 2 - dx
-    i = dx
-    k = answer[4] / 2 + dx
-    m = int((k - j) / i)
-    # Want the list j, j+i, j+2i, + ... + j+m*i
-    x_lst = [j + (mul) * dx for mul in range(m + 1)]
-    x = numpy.array(x_lst)
+BACKGROUNDEPS = constants.epsilon0 * ANSWER[1]
+BACKGROUNDMU = constants.mu0 * ANSWER[2]
+PARAMS.epsilon = BACKGROUNDEPS * np.ones(PARAMS.get_grid()[0].shape)
+PARAMS.mu = BACKGROUNDMU * np.ones(PARAMS.get_grid()[0].shape)
+PARAMS.z_s = ANSWER[5]
 
-X, Y = numpy.meshgrid(x, y)
-
-backgroundeps = constants.epsilon0 * answer[1]
-backgroundmu = constants.mu0 * answer[2]
-epsilon = backgroundeps * numpy.ones(X.shape)
-mu = backgroundmu * numpy.ones(X.shape)
-ZS = answer[5]
-
-alphadat = numpy.ones(X.shape)
-usergeneralparameters = answer
+PARAMS.alphadat = np.ones(PARAMS.get_grid()[0].shape)
+USERGENERALPARAMATERS = ANSWER
