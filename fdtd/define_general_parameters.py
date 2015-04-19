@@ -43,9 +43,9 @@ class Params:
         :param end: The end of the interval
         :param num: The number of points over the interval
 
-        :param beg: real
-        :param end: real
-        :param num: int
+        :type beg: float
+        :type end: float
+        :type num: int
         """
         self._x_arr = np.linspace(beg, end, num=num)
         self.del_x = self._x_arr[1] - self._x_arr[0]
@@ -59,9 +59,9 @@ class Params:
         :param end: The end of the interval
         :param num: The number of points over the interval
 
-        :param beg: real
-        :param end: real
-        :param num: int
+        :type beg: float
+        :type end: float
+        :type num: int
         """
         self._y_arr = np.linspace(beg, end, num=num)
         self.del_y = self._y_arr[1] - self._y_arr[0]
