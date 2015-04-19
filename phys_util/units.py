@@ -428,6 +428,93 @@ class Unit:
                                   .format(self, other))
 
 
+def parse_dimensions(string):
+    """
+    Convert a String representing a value with units into the
+    corresponding python object. Currently only handles units of length
+    """
+    string = string.split()
+    value = float(string[0])
+    units_str = string[1]
+
+    if 'meter' in units_str:
+        prefix = units_str.split('meter')[0]
+        mult = convert_metric_prefix(prefix)
+        return value * meter * mult
+    elif 'inch' in units_str:
+        return value * inch
+
+
+def convert_metric_prefix(string):
+    """
+    Takes a string that represents a metric prefix and converts it
+    into the equivalent multiplier
+    """
+    def test_upper(string):
+        """
+        Test the metric prefixes above 1
+        """
+        factor = 1
+        if string == 'yotta':
+            factor = int(1e24)
+        elif string == 'zetta':
+            factor = int(1e21)
+        elif string == 'exa':
+            factor = int(1e18)
+        elif string == 'peta':
+            factor = int(1e15)
+        elif string == 'tera':
+            factor = int(1e12)
+        elif string == 'giga':
+            factor = int(1e9)
+        elif string == 'mega':
+            factor = int(1e6)
+        elif string == 'kilo':
+            factor = int(1e3)
+        elif string == 'hecto':
+            factor = int(1e2)
+        elif string == 'deca':
+            factor = int(1e1)
+        return factor
+
+    def test_lower(string):
+        """
+        Test the metric prefixes below 1
+        """
+        factor = 1
+        if string == 'deci':
+            factor = 1e-1
+        elif string == 'centi':
+            factor = 1e-2
+        elif string == 'milli':
+            factor = 1e-3
+        elif string == 'micro':
+            factor = 1e-6
+        elif string == 'nano':
+            factor = 1e-9
+        elif string == 'pico':
+            factor = 1e-12
+        elif string == 'femto':
+            factor = 1e-15
+        elif string == 'atto':
+            factor = 1e-18
+        elif string == 'zepto':
+            factor = 1e-21
+        elif string == 'yocto':
+            factor = 1e-24
+        return factor
+
+    string = string.lower()
+    factor = 1
+    factor = test_upper(string)
+    if factor > 1:
+        return factor
+    factor = test_lower(string)
+    if factor < 1:
+        return factor
+    return factor
+
+
 # pylint: disable=invalid-name
 meter = Unit('meter', 'm', {(1, UnitType.LENGTH)})
 """ SI Unit of length """
