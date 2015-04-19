@@ -5,6 +5,6 @@ Units Module
 
 Contents:
 
-.. automodule:: fdtd.units
+.. automodule:: phys_util.units
     :members:
     :special-members:

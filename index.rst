@@ -11,9 +11,8 @@ Contents:
 .. toctree::
    :maxdepth: 2
 
-   doc/tags
-   doc/units
-
+   doc/fdtd
+   doc/phys_util
 
 Indices and tables
 ==================
