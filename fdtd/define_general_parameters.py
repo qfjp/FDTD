@@ -3,7 +3,7 @@
 An attempt to translate the god awful madness that is fdtd.m
 """
 import numpy as np
-import fdtd.constants as constants
+import phys_util.constants as constants
 
 
 class Params:

@@ -1,7 +1,7 @@
 """
 Contains all physical constants
 """
-from fdtd.units import farad, meter, second, henry
+from phys_util.units import farad, meter, second, henry
 
 # pylint: disable=invalid-name
 epsilon0 = 8.854187817e-12 * farad / meter
