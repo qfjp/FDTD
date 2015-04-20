@@ -10,6 +10,10 @@ import PyQt5.QtWidgets as qtwidg
 
 import phys_util.units as u
 
+import fdtd.define_general_parameters as dgp
+
+import sys
+
 
 class Diag(qtwidg.QWidget):
     """

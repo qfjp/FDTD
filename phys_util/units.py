@@ -155,6 +155,16 @@ class Unit:
                 break
         return is_number
 
+    def __lt__(self, other):
+        """
+        < operator for units
+        """
+        if not isinstance(other, Unit) or not other.category == self.category:
+            error_msg = '{} and {} are not Units of the same type'
+            error_msg = '{}, so they can not be compared'.format(error_msg)
+            raise ArithmeticError(error_msg.format(type(self), type(other)))
+        return self.value < other.value
+
     def __mul__(self, other):
         """
         Defines multiplication of units with other units or scalars.
