@@ -15,7 +15,8 @@ class MainWindow(FigureCanvas):
     """
     Main window for fdtd simulator
     """
-    def __init__(self, array=None, parent=None, width=5, height=4, dpi=100):
+    def __init__(self, array=None, extent=None, parent=None, width=5,
+                 height=4, dpi=100):
         fig = Figure(figsize=(width, height), dpi=dpi)
         self.axes = fig.add_subplot(111)
         # Clear the axes every time plot() is called
@@ -36,9 +37,10 @@ class MainWindow(FigureCanvas):
         self.y = np.sin(self.x)
 
         self.array = array
+        self.extent = extent
 
     def update_figure(self):
         # self.axes.plot(self.x, self.y)
         # self.y = np.roll(self.y, -1)
-        self.axes.imshow(self.array)
+        self.axes.imshow(self.array, extent=self.extent)
         self.draw()

@@ -180,17 +180,17 @@ class Diag(qtwidg.QWidget):
         if self._parse_results():
             # TODO Move this to a more accessible place
             params = dgp.Params(self.responses)
-            import matplotlib.pyplot as plt
             x_arr = params.get_x_arr()
             y_arr = params.get_x_arr()
             epsilon = params.ep_v
             mu = params.mu_v
 
-            temp1 = epsilon / c.epsilon0
-            temp2 = np.abs(temp1)
-            temp3 = np.array(temp2, dtype=np.float64)
+            unitless_eps = np.array(epsilon / c.epsilon0, dtype=np.float64)
+            unitless_mu = np.array(mu / c.mu0, dtype=np.float64)
+            array = np.abs(np.sqrt(np.abs(unitless_eps) * unitless_mu))
+            extent = [x_arr[0], x_arr[-1], y_arr[0], y_arr[-1]]
 
-            plot_win = main_win.MainWindow(array=temp3)
+            plot_win = main_win.MainWindow(array=array, extent=extent)
             plot_win.show()
 
             self.hide()
