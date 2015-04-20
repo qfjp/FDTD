@@ -10,6 +10,8 @@ from matplotlib.backends.backend_qt5agg \
      import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
 
+import numpy as np
+
 matplotlib.use('Qt5Agg')
 
 
@@ -64,6 +66,10 @@ class MainWindow(FigureCanvas):
         # self.y = np.sin(self.x)
 
         self.array = array
+        extent[0] = np.floor(extent[0])
+        extent[2] = np.floor(extent[2])
+        extent[1] = np.ceil(extent[1])
+        extent[3] = np.ceil(extent[3])
         self.extent = extent
 
     def update_figure(self):
@@ -73,4 +79,17 @@ class MainWindow(FigureCanvas):
         # self.axes.plot(self.x, self.y)
         # self.y = np.roll(self.y, -1)
         self.axes.imshow(self.array, extent=self.extent)
+        self.axes.set_xlabel(r'$\mu$m')
+        self.axes.set_ylabel(r'$\mu$m')
+
+        # set the x & y ticks
+        low_x = self.extent[0]
+        hih_x = self.extent[1]
+        low_y = self.extent[2]
+        hih_y = self.extent[3]
+        self.axes.set_xticks(np.arange(low_x, hih_x, (hih_x - low_x) / 10))
+        self.axes.set_yticks(np.arange(low_y, hih_y, (hih_y - low_y) / 10))
+
+        self.axes.set_title('Refractive Index')
+        self.axes.grid()
         self.draw()
