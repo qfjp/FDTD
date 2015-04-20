@@ -6,6 +6,9 @@ import matplotlib
 from PyQt5.QtCore import QTimer
 from PyQt5.QtWidgets import QSizePolicy
 
+import PyQt5.QtWidgets as qtwidg
+import PyQt5.QtCore as qtcore
+
 from matplotlib.backends.backend_qt5agg \
      import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
@@ -93,3 +96,51 @@ class MainWindow(FigureCanvas):
         self.axes.set_title('Refractive Index')
         self.axes.grid()
         self.draw()
+
+
+class ApplicationWindow(qtwidg.QMainWindow):
+    def __init__(self, array=None, extent=None):
+        qtwidg.QMainWindow.__init__(self)
+        self.setAttribute(qtcore.Qt.WA_DeleteOnClose)
+        self.setWindowTitle('Application Main Window')
+
+        self.file_menu = qtwidg.QMenu('&File', self)
+        self.file_menu.addAction('&Quit', self.fileQuit,
+                                 qtcore.Qt.CTRL + qtcore.Qt.Key_Q)
+        self.menuBar().addMenu(self.file_menu)
+
+        self.help_menu = qtwidg.QMenu('&Help', self)
+        self.menuBar().addSeparator()
+        self.menuBar().addMenu(self.help_menu)
+
+        self.help_menu.addAction('&About', self.about)
+
+        self.main_widget = qtwidg.QWidget(self)
+
+        plot_win = MainWindow(array=array, extent=extent, parent=self)
+        layout = qtwidg.QVBoxLayout(self.main_widget)
+        layout.addWidget(plot_win)
+
+        self.main_widget.setFocus()
+        self.setCentralWidget(self.main_widget)
+
+        self.statusBar().showMessage('Status Message', 20000)
+
+    def fileQuit(self):
+        self.close()
+
+    def closeEvent(self, ce):
+        self.fileQuit()
+
+    def about(self):
+        qtwidg.QMessageBox.about(self, 'About', 'Unfinished')
+
+if __name__ == '__main__':
+    import sys
+    APP = qtwidg.QApplication(sys.argv)
+    ARRAY = np.ones((300, 300))
+    EXTENT = [-2.5167224080267561, 2.5000000000000631, -2.5167224080267561,
+              2.5000000000000631]
+    AW = ApplicationWindow(array=ARRAY, extent=EXTENT)
+    AW.show()
+    APP.exec_()

@@ -111,6 +111,9 @@ class Diag(qtwidg.QWidget):
         self.setLayout(main_lay)
         self.setWindowTitle('Define Initial Parameters')
 
+        # Necessary for main window to show up
+        self.plot_win = None
+
     def _validate_input(self, param, func, message):
         """
         Try func(param) to see if there will be a ValueError.
@@ -187,11 +190,12 @@ class Diag(qtwidg.QWidget):
 
             unitless_eps = np.array(epsilon / c.epsilon0, dtype=np.float64)
             unitless_mu = np.array(mu / c.mu0, dtype=np.float64)
-            array = np.abs(np.sqrt(np.abs(unitless_eps) * unitless_mu))
+            array = np.abs(np.sqrt(unitless_eps * unitless_mu))
             extent = [x_arr[0], x_arr[-1], y_arr[0], y_arr[-1]]
 
-            plot_win = main_win.MainWindow(array=array, extent=extent)
-            plot_win.show()
+            self.plot_win = main_win.ApplicationWindow(array=array,
+                                                       extent=extent)
+            self.plot_win.show()
 
             self.hide()
             # sys.exit(0)
