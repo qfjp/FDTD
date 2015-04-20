@@ -122,22 +122,23 @@ class Params:
         """
         The meat of define_general_parameters
         """
-        x_dim = self.answers['x_dim']
-        y_dim = self.answers['y_dim']
+        micrometer = 1e-6 * u.meter
+        x_dim = self.answers['x_dim'] / micrometer
+        y_dim = self.answers['y_dim'] / micrometer
         max_gp = self.answers['max_gp']
         # if ANSWER[4] > ANSWER[5]:
         if x_dim > y_dim:
-            self.set_x_arr(-x_dim / (2 * u.meter), x_dim / (2 * u.meter),
+            self.set_x_arr(-x_dim / 2, x_dim / 2,
                            max_gp)
-            self.set_y_col_notation(-y_dim / (2 * u.meter) - self.del_x,
+            self.set_y_col_notation(-y_dim / 2 - self.del_x,
                                     self.del_x,
-                                    y_dim / (2 * u.meter) + self.del_x)
+                                    y_dim / 2 + self.del_x)
         else:
-            self.set_y_arr(-y_dim / (2 * u.meter), y_dim / (2 * u.meter),
+            self.set_y_arr(-y_dim / 2, y_dim / 2,
                            max_gp)
-            self.set_x_col_notation(-x_dim / (2 * u.meter) - self.del_y,
+            self.set_x_col_notation(-x_dim / 2 - self.del_y,
                                     self.del_y,
-                                    x_dim / (2 * u.meter) + self.del_y)
+                                    x_dim / 2 + self.del_y)
 
         self.set_grid()
 
