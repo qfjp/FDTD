@@ -1,6 +1,12 @@
 # pylint: disable=no-member
 """
-An attempt to translate the god awful madness that is fdtd.m
+.. module:: fdtd.define_general_parameters
+   :platform: Unix, Windows
+   :synopsis: An attempt to translate the god awful madness that is
+              the matlab fdtd toolkit. This should be a direct
+              translation of definegeneralparameters.m
+
+.. moduleauthor:: Daniel Pade <djpade@gmail.com>
 """
 import numpy as np
 import phys_util.units as u

@@ -12,6 +12,7 @@ Contents:
    :maxdepth: 2
 
    doc/fdtd
+   doc/ui
    doc/phys_util
 
 Indices and tables

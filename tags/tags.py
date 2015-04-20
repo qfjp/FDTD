@@ -1,5 +1,9 @@
 """
-Tags for use in projet
+.. module:: tags.tags
+   :platform: Unix, Windows
+   :synopsis: Extra annotations for python class-level methods
+
+.. moduleauthor:: Daniel Pade <djpade@gmail.com>
 """
 import warnings
 

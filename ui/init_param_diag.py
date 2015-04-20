@@ -1,7 +1,9 @@
 """
-A copy of the first dialog to define the initial paramaters
-
-Hooks into define_general_paramaters
+.. module:: ui.init_param_diag
+   :platform: Unix, Windows
+   :synopsis: A copy of the first dialog to define the initial paramaters
+              Hooks into fdtd.define_general_parameters
+.. moduleauthor:: Daniel Pade <djpade@gmail.com>
 """
 # pylint: disable=no-member
 

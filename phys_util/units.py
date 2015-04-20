@@ -1,7 +1,7 @@
 """
-.. module:: units
+.. module:: phys_util.units
    :platform: Unix, Windows
-   :synopsis: An attempt to define units as they are used in Geant4,
+   :synopsis: Defines Unit objects as they are used in Geant4,
               where we can multiply by units to 'type' certain
               scalars, and divide by  units to get the corresponding
               value.
