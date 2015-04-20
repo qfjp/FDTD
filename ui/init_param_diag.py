@@ -12,9 +12,15 @@ import PyQt5.QtWidgets as qtwidg
 
 import phys_util.units as u
 
+import phys_util.constants as c
+
 import fdtd.define_general_parameters as dgp
 
+import numpy as np
+
 import sys
+
+import ui.main_window as main_win
 
 
 class Diag(qtwidg.QWidget):
@@ -172,10 +178,23 @@ class Diag(qtwidg.QWidget):
         OK button hook
         """
         if self._parse_results():
-            for key in self.responses:
-                print('{} : {}'.format(key, self.responses[key]))
-            self.destroy()
-            sys.exit(0)
+            # TODO Move this to a more accessible place
+            params = dgp.Params(self.responses)
+            import matplotlib.pyplot as plt
+            x_arr = params.get_x_arr()
+            y_arr = params.get_x_arr()
+            epsilon = params.ep_v
+            mu = params.mu_v
+
+            temp1 = epsilon / c.epsilon0
+            temp2 = np.abs(temp1)
+            temp3 = np.array(temp2, dtype=np.float64)
+
+            plot_win = main_win.MainWindow(array=temp3)
+            plot_win.show()
+
+            self.hide()
+            # sys.exit(0)
 
     @staticmethod
     def cancel_clicked():
@@ -185,7 +204,6 @@ class Diag(qtwidg.QWidget):
         sys.exit(0)
 
 if __name__ == '__main__':
-    import sys
 
     APP = qtwidg.QApplication(sys.argv)
 
