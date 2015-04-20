@@ -3,24 +3,40 @@
 An attempt to translate the god awful madness that is fdtd.m
 """
 import numpy as np
+import phys_util.units as u
 import phys_util.constants as constants
+
+# NOTE: as a translation guide:
+#       answer[1] -> self.answers['max_gp']
+#       answer[2] -> self.answers['eps']
+#       answer[3] -> self.answers['mu']
+#       answer[4] -> self.answers['x_dim']
+#       answer[5] -> self.answers['y_dim']
+#       answer[6] -> self.answers['timestep']
+#       answer[7] -> self.answers['layers']
+#       answer[8] -> self.answers['axis']
 
 
 class Params:
     """
     Reworking define_general_parameters as a class
     """
-    def __init__(self):
+    def __init__(self, answers):
+        self.answers = answers
         self._x_arr = None   # x
         self._y_arr = None   # y
         self.del_x = 0       # dx
         self.del_y = 0       # dy
         self._x_grid = None  # X
         self._y_grid = None  # Y
-        self.epsilon = None
-        self.mu = None
+        self.ep_v = None
+        self.mu_v = None
         self.z_s = None
         self.alphadat = None
+
+        self.axisimage = self.answers['axis']
+        self.pmlwidth = self.answers['layers']
+        self.set_from_user_input()
 
     def set_grid(self):
         """
@@ -96,74 +112,33 @@ class Params:
         """
         return self._y_arr
 
+    def set_from_user_input(self):
+        """
+        The meat of define_general_parameters
+        """
+        x_dim = self.answers['x_dim']
+        y_dim = self.answers['y_dim']
+        max_gp = self.answers['max_gp']
+        # if ANSWER[4] > ANSWER[5]:
+        if x_dim > y_dim:
+            self.set_x_arr(-x_dim / (2 * u.meter), x_dim / (2 * u.meter),
+                           max_gp)
+            self.set_y_col_notation(-y_dim / (2 * u.meter) - self.del_x,
+                                    self.del_x,
+                                    y_dim / (2 * u.meter) + self.del_x)
+        else:
+            self.set_y_arr(-y_dim / (2 * u.meter), y_dim / (2 * u.meter),
+                           max_gp)
+            self.set_x_col_notation(-x_dim / (2 * u.meter) - self.del_y,
+                                    self.del_y,
+                                    x_dim / (2 * u.meter) + self.del_y)
 
-# From definegeneralparameters.m
-# Columns in answer are (in order):
-#    i) Max number of gridpoints in 1-D
-#   ii) \epsilon - Background
-#  iii) \mu - Background
-#   iv) Size x-dim [\mum]
-#    v) Size y-dim [\mum]
-#   vi) Num of time stepsa
-#  vii) num of perfectly matched layers
-# viii) axis equal
-PROMPT = ['maximum number of Gridpoints in one Dimension',
-          '\\epsilon - Background', '\\mu - Background',
-          'Size x-Dimension [\\mum]', 'Size y-Dimension [\\mum]',
-          'Number of timesteps', 'Number of Perfectly Matched Layers',
-          'axis equal']
+        self.set_grid()
 
-# TODO: What do these mean?
-DEFAULT_ANSWER = ['300', '1', '1', '5', '5', '300000', '10', '0']
-# options...
-ANSWER = [int(i) for i in DEFAULT_ANSWER]
-AXISIMAGE = ANSWER[7]
-PMLWIDTH = ANSWER[6]
+        background_eps = constants.epsilon0 * self.answers['eps']
+        background_mu = constants.mu0 * self.answers['mu']
+        self.ep_v = background_eps * np.ones(self.get_grid()[0].shape)
+        self.mu_v = background_mu * np.ones(self.get_grid()[0].shape)
+        self.z_s = self.answers['timestep']
 
-PARAMS = Params()
-
-# if ANSWER[4] > ANSWER[5]:
-if ANSWER[5] > ANSWER[4]:
-    # x=linspace(-str2num(ANSWER{4})/2,str2num(ANSWER{4})/2,str2num(ANSWER{1}))
-    # y=[-str2num(ANSWER{5})/2-dx:dx:str2num(ANSWER{5})/2+dx]
-    PARAMS.set_x_arr(-ANSWER[3] / 2, ANSWER[3] / 2, ANSWER[0])
-    PARAMS.set_y_col_notation(-ANSWER[4] / 2 - PARAMS.del_x,
-                              PARAMS.del_x,
-                              ANSWER[4] / 2 + PARAMS.del_x)
-    # x = np.linspace(-ANSWER[3] / 2, ANSWER[3] / 2, num=ANSWER[0])
-    # dx = x[1] - x[0]
-
-    # j = -ANSWER[4] / 2 - dx
-    # i = dx
-    # k = ANSWER[4] / 2 + dx
-    # m = int((k - j) / i)
-    # # Want the list j, j+i, j+2i, + ... + j+m*i
-    # y_lst = [j + (mul) * dx for mul in range(m + 1)]
-    # y = np.array(y_lst)
-else:
-    # y = np.linspace(-ANSWER[4] / 2, ANSWER[4] / 2, ANSWER[0])
-    PARAMS.set_y_arr(-ANSWER[4] / 2, ANSWER[4] / 2, ANSWER[0])
-    PARAMS.set_x_col_notation(ANSWER[3] / 2 - PARAMS.del_y,
-                              PARAMS.del_y,
-                              ANSWER[3] / 2 + PARAMS.del_y)
-    # dx = y[1] - y[0]
-
-    # j = -ANSWER[4] / 2 - dx
-    # i = dx
-    # k = ANSWER[4] / 2 + dx
-    # m = int((k - j) / i)
-    # # Want the list j, j+i, j+2i, + ... + j+m*i
-    # x_lst = [j + (mul) * dx for mul in range(m + 1)]
-    # x = np.array(x_lst)
-
-# X, Y = np.meshgrid(PARAMS.get_x_arr(), PARAMS.get_y_arr())
-PARAMS.set_grid()
-
-BACKGROUNDEPS = constants.epsilon0 * ANSWER[1]
-BACKGROUNDMU = constants.mu0 * ANSWER[2]
-PARAMS.epsilon = BACKGROUNDEPS * np.ones(PARAMS.get_grid()[0].shape)
-PARAMS.mu = BACKGROUNDMU * np.ones(PARAMS.get_grid()[0].shape)
-PARAMS.z_s = ANSWER[5]
-
-PARAMS.alphadat = np.ones(PARAMS.get_grid()[0].shape)
-USERGENERALPARAMATERS = ANSWER
+        self.alphadat = np.ones(self.get_grid()[0].shape)
