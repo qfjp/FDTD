@@ -11,6 +11,8 @@ import numpy as np
 
 from ui.plot_widget import PlotWidget
 
+import ui.refract_index_prof_diag as ripd
+
 matplotlib.use('Qt5Agg')
 
 
@@ -35,6 +37,8 @@ class MainButtons(qtwidg.QWidget):
         self.change_geom_button = \
             qtwidg.QPushButton('Change Basic Geometry Details')
 
+        self.define_ref_button.clicked.connect(self.open_define_ref)
+
         layout.addWidget(self.define_ref_button, 0, 0)
         layout.addWidget(self.change_ref_button, 0, 1)
         layout.addWidget(self.new_source_button, 0, 2)
@@ -43,6 +47,11 @@ class MainButtons(qtwidg.QWidget):
         layout.addWidget(self.change_geom_button, 1, 2)
 
         self.setLayout(layout)
+
+        self.ripd_diag = ripd.Diag()
+
+    def open_define_ref(self):
+        self.ripd_diag.show()
 
 
 class ApplicationWindow(qtwidg.QMainWindow):
@@ -85,8 +94,6 @@ class ApplicationWindow(qtwidg.QMainWindow):
 
         self.main_widget.setFocus()
         self.setCentralWidget(self.main_widget)
-
-        plot_win.adjustSize()
 
         self.statusBar().showMessage('Status Message', 20000)
 
