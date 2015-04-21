@@ -3,102 +3,52 @@ The plot widget
 """
 # pylint: disable=no-name-in-module, no-member
 import matplotlib
-from PyQt5.QtCore import QTimer
-from PyQt5.QtWidgets import QSizePolicy
 
 import PyQt5.QtWidgets as qtwidg
 import PyQt5.QtCore as qtcore
 
-from matplotlib.backends.backend_qt5agg \
-     import FigureCanvasQTAgg as FigureCanvas
-from matplotlib.figure import Figure
-
 import numpy as np
+
+from ui.plot_widget import PlotWidget
 
 matplotlib.use('Qt5Agg')
 
 
-class MainWindow(FigureCanvas):
+class MainButtons(qtwidg.QWidget):
     """
-    Main window for fdtd simulator
-    :param array: The array to draw using imshow
-    :param extent: The extents to use for drawing the plot
-                   (left, right, bottom, top)
-
-    :param parent: The parent widget
-    :param width: The width of the chart
-    :param height: the height of the chart
-    :param dpi: the resolution of the chart
-    :type array: numpy.ndarray
-    :type extent: list
+    The buttons on the main window
     """
-    def __init__(self, **kwargs):
-        # Default kwargs to use:
-        array = None
-        extent = None
-        parent = None
-        width = 5
-        height = 4
-        dpi = 100
-        try:
-            array = kwargs['array']
-            extent = kwargs['extent']
-            parent = kwargs['parent']
-            width = kwargs['width']
-            height = kwargs['height']
-            dpi = kwargs['dpi']
-        except KeyError:
-            pass
-        fig = Figure(figsize=(width, height), dpi=dpi)
-        self.axes = fig.add_subplot(111)
-        # Clear the axes every time plot() is called
-        self.axes.hold(False)
+    def __init__(self, parent=None):
+        super(MainButtons, self).__init__(parent)
 
-        super(MainWindow, self).__init__(fig)
-        self.setParent(parent)
+        layout = qtwidg.QGridLayout()
+        self.define_ref_button = \
+            qtwidg.QPushButton('Define Refractive-Index Profile')
+        self.change_ref_button = \
+            qtwidg.QPushButton('Change Refractive-Index Profile')
+        self.new_source_button = \
+            qtwidg.QPushButton('New Source-Structure')
+        self.change_src_button = \
+            qtwidg.QPushButton('Change Source-Structure')
+        self.start_sim_button = \
+            qtwidg.QPushButton('Start Simulation')
+        self.change_geom_button = \
+            qtwidg.QPushButton('Change Basic Geometry Details')
 
-        FigureCanvas.setSizePolicy(self, QSizePolicy.Expanding,
-                                   QSizePolicy.Expanding)
-        FigureCanvas.updateGeometry(self)
+        layout.addWidget(self.define_ref_button, 0, 0)
+        layout.addWidget(self.change_ref_button, 0, 1)
+        layout.addWidget(self.new_source_button, 0, 2)
+        layout.addWidget(self.change_src_button, 1, 0)
+        layout.addWidget(self.start_sim_button, 1, 1)
+        layout.addWidget(self.change_geom_button, 1, 2)
 
-        timer = QTimer(self)
-        timer.timeout.connect(self.update_figure)
-        timer.start(50)
-
-        # self.x = np.arange(0, 4 * np.pi, 0.1)
-        # self.y = np.sin(self.x)
-
-        self.array = array
-        extent[0] = np.floor(extent[0])
-        extent[2] = np.floor(extent[2])
-        extent[1] = np.ceil(extent[1])
-        extent[3] = np.ceil(extent[3])
-        self.extent = extent
-
-    def update_figure(self):
-        """
-        Update the matplotlib plot
-        """
-        # self.axes.plot(self.x, self.y)
-        # self.y = np.roll(self.y, -1)
-        self.axes.imshow(self.array, extent=self.extent)
-        self.axes.set_xlabel(r'$\mu$m')
-        self.axes.set_ylabel(r'$\mu$m')
-
-        # set the x & y ticks
-        low_x = self.extent[0]
-        hih_x = self.extent[1]
-        low_y = self.extent[2]
-        hih_y = self.extent[3]
-        self.axes.set_xticks(np.arange(low_x, hih_x, (hih_x - low_x) / 10))
-        self.axes.set_yticks(np.arange(low_y, hih_y, (hih_y - low_y) / 10))
-
-        self.axes.set_title('Refractive Index')
-        self.axes.grid()
-        self.draw()
+        self.setLayout(layout)
 
 
 class ApplicationWindow(qtwidg.QMainWindow):
+    """
+    The window where the magic happens
+    """
     def __init__(self, array=None, extent=None):
         qtwidg.QMainWindow.__init__(self)
         self.setAttribute(qtcore.Qt.WA_DeleteOnClose)
@@ -117,23 +67,38 @@ class ApplicationWindow(qtwidg.QMainWindow):
 
         self.main_widget = qtwidg.QWidget(self)
 
-        plot_win = MainWindow(array=array, extent=extent, parent=self)
+        plot_win = PlotWidget(array=array, extent=extent, parent=self)
         layout = qtwidg.QVBoxLayout(self.main_widget)
         layout.addWidget(plot_win)
+
+        layout.addWidget(MainButtons())
 
         self.main_widget.setFocus()
         self.setCentralWidget(self.main_widget)
 
         self.statusBar().showMessage('Status Message', 20000)
 
+    # pylint: disable=invalid-name
     def fileQuit(self):
+        """
+        Quit the program
+        """
         self.close()
 
+    # pylint: disable=unused-argument
     def closeEvent(self, ce):
+        """
+        Quit the program
+        """
         self.fileQuit()
+    # pylint: enable=unused-argument
 
     def about(self):
+        """
+        Bring up the about window
+        """
         qtwidg.QMessageBox.about(self, 'About', 'Unfinished')
+    # pylint: enable=invalid-name
 
 if __name__ == '__main__':
     import sys
