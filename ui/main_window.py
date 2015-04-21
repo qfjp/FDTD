@@ -67,14 +67,26 @@ class ApplicationWindow(qtwidg.QMainWindow):
 
         self.main_widget = qtwidg.QWidget(self)
 
-        plot_win = PlotWidget(array=array, extent=extent, parent=self)
+        plot_win = PlotWidget(parent=self, array=array, extent=extent)
+
         layout = qtwidg.QVBoxLayout(self.main_widget)
         layout.addWidget(plot_win)
 
-        layout.addWidget(MainButtons())
+        self.confirm_button = \
+            qtwidg.QPushButton('Confirm')
+        button_layout = qtwidg.QGridLayout()
+        button_layout.addWidget(MainButtons(), 0, 0)
+        button_layout.addWidget(self.confirm_button, 0, 1)
+
+        button_widget = qtwidg.QWidget()
+        button_widget.setLayout(button_layout)
+
+        layout.addWidget(button_widget)
 
         self.main_widget.setFocus()
         self.setCentralWidget(self.main_widget)
+
+        plot_win.adjustSize()
 
         self.statusBar().showMessage('Status Message', 20000)
 
