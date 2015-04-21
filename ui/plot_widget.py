@@ -43,24 +43,24 @@ class PlotWidget(FigureCanvas):
             dpi = kwargs['dpi']
         except KeyError:
             pass
-        fig = Figure(figsize=(width, height), dpi=dpi)
-        self.axes = fig.add_subplot(111)
+        self.fig = Figure(figsize=(width, height), dpi=dpi)
+        self.axes = self.fig.add_subplot(111)
         # Clear the axes every time plot() is called
         self.axes.hold(False)
 
-        super(PlotWidget, self).__init__(fig)
+        super(PlotWidget, self).__init__(self.fig)
         self.setParent(parent)
 
         FigureCanvas.setSizePolicy(self, QSizePolicy.Expanding,
                                    QSizePolicy.Expanding)
         FigureCanvas.updateGeometry(self)
 
+        self.height = height
+        self.width = width
+
         timer = QTimer(self)
         timer.timeout.connect(self.update_figure)
         timer.start(50)
-
-        # self.x = np.arange(0, 4 * np.pi, 0.1)
-        # self.y = np.sin(self.x)
 
         self.array = array
         self.extent = extent
@@ -71,7 +71,9 @@ class PlotWidget(FigureCanvas):
         """
         # self.axes.plot(self.x, self.y)
         # self.y = np.roll(self.y, -1)
-        self.axes.imshow(self.array, extent=self.extent)
+        aspect = self.height / self.width
+        self.axes.imshow(self.array, extent=self.extent,
+                         aspect=aspect)
         self.axes.set_xlabel(r'$\mu$m')
         self.axes.set_ylabel(r'$\mu$m')
 
@@ -91,4 +93,5 @@ class PlotWidget(FigureCanvas):
 
         self.axes.set_title('Refractive Index')
         self.axes.grid()
+        self.fig.tight_layout()
         self.draw()
